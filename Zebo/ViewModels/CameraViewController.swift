@@ -17,6 +17,9 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     private var previewLayer: AVCaptureVideoPreviewLayer!
     var viewModel: SeasonViewModel?
 
+    let colorService = ColorAnalysisService()
+
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureCamera()
@@ -82,22 +85,47 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
 
     func classifySeason(with image: CGImage) {
         guard let model = try? VNCoreMLModel(for: SeasonClassifier().model) else {
-            print("⚠️ Failed to load model")
+            print("❗Model failed to load – using fallback.")
+            fallbackRuleBasedSeason(from: image)
             return
         }
 
         let request = VNCoreMLRequest(model: model) { [weak self] request, error in
-            guard let results = request.results as? [VNClassificationObservation],
-                  let top = results.first else { return }
+            guard let self = self else { return }
 
-            DispatchQueue.main.async {
+            if let results = request.results as? [VNClassificationObservation],
+               let top = results.first, top.confidence > 0.7 {
                 let predictedSeason = top.identifier
-                print("🧠 ML Predicted: \(predictedSeason)")
-                self?.viewModel?.updateSeason(to: predictedSeason)
+                print("🧠 ML Predicted: \(predictedSeason) with confidence \(top.confidence)")
+                DispatchQueue.main.async {
+                    self.viewModel?.updateSeason(to: predictedSeason)
+                }
+            } else {
+                print("❗Low confidence or no result – using fallback.")
+                self.fallbackRuleBasedSeason(from: image)
             }
         }
 
         let handler = VNImageRequestHandler(cgImage: image, options: [:])
         try? handler.perform([request])
     }
+    
+    
+    func fallbackRuleBasedSeason(from image: CGImage) {
+        let ciImage = CIImage(cgImage: image)
+        let context = CIContext()
+        guard let cg = context.createCGImage(ciImage, from: ciImage.extent) else { return }
+
+        let uiImage = UIImage(cgImage: cg)
+        guard let avgColor = uiImage.averageColor else { return }
+
+        let season = colorService.detectSeason(from: avgColor)
+        print("🎨 Fallback Predicted Season: \(season)")
+
+        DispatchQueue.main.async {
+            self.viewModel?.updateSeason(to: season)
+        }
+    }
+
+
 }
