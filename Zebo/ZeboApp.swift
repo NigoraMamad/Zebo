@@ -11,7 +11,7 @@ import SwiftUI
 struct ZeboApp: App {
     var body: some Scene {
         WindowGroup {
-            WelcomeView()
+            ContentView()
         }
     }
 }

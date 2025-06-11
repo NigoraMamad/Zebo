@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct WelcomeView: View {
-    @StateObject private var viewModel = QuizViewModel()
+  
 
     var body: some View {
         NavigationStack {
@@ -31,8 +31,8 @@ struct WelcomeView: View {
                     .foregroundColor(.secondary)
                     .padding(.horizontal)
 
-                NavigationLink(destination: QuizStep1View(viewModel: viewModel)) {
-                    Text("Start the Color Quiz")
+                NavigationLink(destination: ContentView()) {
+                    Text("Lets Start")
                         .fontWeight(.semibold)
                         .padding()
                         .frame(maxWidth: .infinity)
