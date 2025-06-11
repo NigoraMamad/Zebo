@@ -10,9 +10,14 @@ import SwiftUI
 import AVFoundation
 
 struct CameraView: UIViewControllerRepresentable {
+    @ObservedObject var viewModel: SeasonViewModel
+
     func makeUIViewController(context: Context) -> CameraViewController {
-        return CameraViewController()
+        let controller = CameraViewController()
+        controller.viewModel = viewModel
+        return controller
     }
 
     func updateUIViewController(_ uiViewController: CameraViewController, context: Context) {}
 }
+

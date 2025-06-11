@@ -5,6 +5,8 @@
 //  Created by Nigorakhon Mamadalieva on 11/06/25.
 //
 
+import UIKit
+import CoreImage
 import SwiftUI
 
 extension UIImage {
@@ -34,6 +36,42 @@ extension UIImage {
             blue: CGFloat(bitmap[2]) / 255,
             alpha: CGFloat(bitmap[3]) / 255
         )
+    }
+}
+
+extension UIColor {
+    var rgbComponents: (r: CGFloat, g: CGFloat, b: CGFloat)? {
+        var r: CGFloat = 0
+        var g: CGFloat = 0
+        var b: CGFloat = 0
+        var a: CGFloat = 0
+
+        if self.getRed(&r, green: &g, blue: &b, alpha: &a) {
+            return (r, g, b)
+        } else {
+            return nil
+        }
+    }
+}
+
+extension Color {
+    init(hex: String) {
+        let hex = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+        let scanner = Scanner(string: hex)
+
+        // Remove #
+        if hex.hasPrefix("#") {
+            scanner.currentIndex = hex.index(after: hex.startIndex)
+        }
+
+        var rgb: UInt64 = 0
+        scanner.scanHexInt64(&rgb)
+
+        let r = Double((rgb >> 16) & 0xFF) / 255.0
+        let g = Double((rgb >> 8) & 0xFF) / 255.0
+        let b = Double(rgb & 0xFF) / 255.0
+
+        self.init(red: r, green: g, blue: b)
     }
 }
 

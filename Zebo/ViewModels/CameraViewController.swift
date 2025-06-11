@@ -12,6 +12,10 @@ import Vision
 import CoreImage
 
 class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
+    
+    private let colorService = ColorAnalysisService()
+    
+    var viewModel: SeasonViewModel?
 
     private let session = AVCaptureSession()
     private var previewLayer: AVCaptureVideoPreviewLayer!
@@ -85,8 +89,12 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
 
         DispatchQueue.main.async {
             print("🎨 Skin color: \(averageColor)")
-            // Next: classify this color into a season
+            let season = self.colorService.detectSeason(from: averageColor)
+            print("🍂 Detected Season: \(season)")
         }
+        
+        let season = colorService.detectSeason(from: averageColor)
+        viewModel?.updateSeason(to: season)
     }
 
 }
