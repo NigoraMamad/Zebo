@@ -6,13 +6,8 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		17A640242DFA127A00981E53 /* SeasonClassifier.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 17A640232DFA127A00981E53 /* SeasonClassifier.mlmodel */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXFileReference section */
-		17A63F5C2DF8CF3000981E53 /* Zebo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Zebo.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		17A640232DFA127A00981E53 /* SeasonClassifier.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = SeasonClassifier.mlmodel; sourceTree = "<group>"; };
+		17A63F5C2DF8CF3000981E53 /* Zebo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Zebo.app; path = "/Users/nigorakhon/Desktop/swiftProjects /Zebo/build/Debug-iphoneos/Zebo.app"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -51,17 +46,7 @@
 			isa = PBXGroup;
 			children = (
 				17A63F5E2DF8CF3000981E53 /* Zebo */,
-				17A63F5D2DF8CF3000981E53 /* Products */,
-				17A640232DFA127A00981E53 /* SeasonClassifier.mlmodel */,
 			);
-			sourceTree = "<group>";
-		};
-		17A63F5D2DF8CF3000981E53 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				17A63F5C2DF8CF3000981E53 /* Zebo.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -114,7 +99,7 @@
 			mainGroup = 17A63F532DF8CF3000981E53;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 17A63F5D2DF8CF3000981E53 /* Products */;
+			productRefGroup = 17A63F532DF8CF3000981E53;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -138,7 +123,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				17A640242DFA127A00981E53 /* SeasonClassifier.mlmodel in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -85,7 +85,7 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
 
     func classifySeason(with image: CGImage) {
         guard let model = try? VNCoreMLModel(for: SeasonClassifier().model) else {
-            print("❗Model failed to load – using fallback.")
+            print("❗ Model failed to load – using fallback.")
             fallbackRuleBasedSeason(from: image)
             return
         }
@@ -94,14 +94,19 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
             guard let self = self else { return }
 
             if let results = request.results as? [VNClassificationObservation],
-               let top = results.first, top.confidence > 0.7 {
-                let predictedSeason = top.identifier
-                print("🧠 ML Predicted: \(predictedSeason) with confidence \(top.confidence)")
-                DispatchQueue.main.async {
-                    self.viewModel?.updateSeason(to: predictedSeason)
+               let top = results.first {
+                print("🧠 CoreML Result: \(top.identifier) — Confidence: \(top.confidence)")
+
+                if top.confidence > 0.7 {
+                    DispatchQueue.main.async {
+                        self.viewModel?.updateSeason(to: top.identifier)
+                    }
+                } else {
+                    print("⚠️ Low confidence — using fallback.")
+                    self.fallbackRuleBasedSeason(from: image)
                 }
             } else {
-                print("❗Low confidence or no result – using fallback.")
+                print("⚠️ No CoreML result — using fallback.")
                 self.fallbackRuleBasedSeason(from: image)
             }
         }
