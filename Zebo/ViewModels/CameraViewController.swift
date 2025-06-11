@@ -9,16 +9,13 @@
 import UIKit
 import AVFoundation
 import Vision
-import CoreImage
+import CoreML
 
 class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
     
-    private let colorService = ColorAnalysisService()
-    
-    var viewModel: SeasonViewModel?
-
     private let session = AVCaptureSession()
     private var previewLayer: AVCaptureVideoPreviewLayer!
+    var viewModel: SeasonViewModel?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,14 +55,13 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
             self?.processFaceObservation(face, in: pixelBuffer)
         }
 
-        let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: .leftMirrored)
-        try? imageRequestHandler.perform([request])
+        let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: .leftMirrored)
+        try? handler.perform([request])
     }
-    
+
     func processFaceObservation(_ face: VNFaceObservation, in pixelBuffer: CVPixelBuffer) {
         let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
 
-        // Convert bounding box (normalized) to pixel coordinates
         let width = CGFloat(CVPixelBufferGetWidth(pixelBuffer))
         let height = CGFloat(CVPixelBufferGetHeight(pixelBuffer))
 
@@ -77,24 +73,31 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         )
 
         let cropped = ciImage.cropped(to: faceRect)
-        analyzeSkinColor(in: cropped)
-    }
-    
-    func analyzeSkinColor(in image: CIImage) {
         let context = CIContext()
-        guard let cgImage = context.createCGImage(image, from: image.extent) else { return }
 
-        let uiImage = UIImage(cgImage: cgImage)
-        guard let averageColor = uiImage.averageColor else { return }
-
-        DispatchQueue.main.async {
-            print("🎨 Skin color: \(averageColor)")
-            let season = self.colorService.detectSeason(from: averageColor)
-            print("🍂 Detected Season: \(season)")
+        if let cgImage = context.createCGImage(cropped, from: cropped.extent) {
+            classifySeason(with: cgImage)
         }
-        
-        let season = colorService.detectSeason(from: averageColor)
-        viewModel?.updateSeason(to: season)
     }
 
+    func classifySeason(with image: CGImage) {
+        guard let model = try? VNCoreMLModel(for: SeasonClassifier().model) else {
+            print("⚠️ Failed to load model")
+            return
+        }
+
+        let request = VNCoreMLRequest(model: model) { [weak self] request, error in
+            guard let results = request.results as? [VNClassificationObservation],
+                  let top = results.first else { return }
+
+            DispatchQueue.main.async {
+                let predictedSeason = top.identifier
+                print("🧠 ML Predicted: \(predictedSeason)")
+                self?.viewModel?.updateSeason(to: predictedSeason)
+            }
+        }
+
+        let handler = VNImageRequestHandler(cgImage: image, options: [:])
+        try? handler.perform([request])
+    }
 }

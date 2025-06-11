@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		17A640242DFA127A00981E53 /* SeasonClassifier.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 17A640232DFA127A00981E53 /* SeasonClassifier.mlmodel */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		17A63F5C2DF8CF3000981E53 /* Zebo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Zebo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		17A640232DFA127A00981E53 /* SeasonClassifier.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = SeasonClassifier.mlmodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -47,6 +52,7 @@
 			children = (
 				17A63F5E2DF8CF3000981E53 /* Zebo */,
 				17A63F5D2DF8CF3000981E53 /* Products */,
+				17A640232DFA127A00981E53 /* SeasonClassifier.mlmodel */,
 			);
 			sourceTree = "<group>";
 		};
@@ -132,6 +138,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				17A640242DFA127A00981E53 /* SeasonClassifier.mlmodel in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
