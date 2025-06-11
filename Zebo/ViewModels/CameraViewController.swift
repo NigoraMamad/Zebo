@@ -48,19 +48,64 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         session.startRunning()
     }
 
+//    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+//        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+//
+//        let request = VNDetectFaceRectanglesRequest { [weak self] request, error in
+//            guard let observations = request.results as? [VNFaceObservation],
+//                  let face = observations.first else { return }
+//
+//            self?.processFaceObservation(face, in: pixelBuffer)
+//        }
+//
+//        let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: .leftMirrored)
+//        try? handler.perform([request])
+//    }
+    
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
 
         let request = VNDetectFaceRectanglesRequest { [weak self] request, error in
-            guard let observations = request.results as? [VNFaceObservation],
-                  let face = observations.first else { return }
+            guard let self = self,
+                  let observations = request.results as? [VNFaceObservation],
+                  let face = observations.first else {
+                DispatchQueue.main.async {
+                    self?.viewModel?.faceBoundingBox = nil
+                }
+                return
+            }
 
-            self?.processFaceObservation(face, in: pixelBuffer)
+            // Update face bounding box for SwiftUI overlay
+            self.updateFaceBox(for: face)
+
+            // Continue ML classification using cropped face
+            self.processFaceObservation(face, in: pixelBuffer)
         }
 
         let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: .leftMirrored)
         try? handler.perform([request])
     }
+    
+    
+    private func updateFaceBox(for observation: VNFaceObservation) {
+        guard let previewLayer = self.previewLayer else { return }
+
+        let boundingBox = observation.boundingBox
+        let size = previewLayer.bounds.size
+
+        let x = boundingBox.origin.x * size.width
+        let height = boundingBox.size.height * size.height
+        let y = (1 - boundingBox.origin.y) * size.height - height
+        let width = boundingBox.size.width * size.width
+
+        let rect = CGRect(x: x, y: y, width: width, height: height)
+
+        DispatchQueue.main.async {
+            self.viewModel?.faceBoundingBox = rect
+        }
+    }
+
+
 
     func processFaceObservation(_ face: VNFaceObservation, in pixelBuffer: CVPixelBuffer) {
         let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
