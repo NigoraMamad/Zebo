@@ -29,13 +29,11 @@ class SeasonViewModel: ObservableObject {
         seasonalPalette.filter { $0.season == detectedSeason }
     }
 
-    /// Current color in preview
     var currentColor: Color {
         guard !previewColors.isEmpty else { return .gray }
         return previewColors[currentColorIndex % previewColors.count].color
     }
 
-    /// Name of current color
     var currentColorName: String {
         guard !previewColors.isEmpty else { return "Unknown" }
         return previewColors[currentColorIndex % previewColors.count].name

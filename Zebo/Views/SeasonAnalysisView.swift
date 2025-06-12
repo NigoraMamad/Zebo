@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct SeasonAnalysisView: View {
     @StateObject var viewModel = SeasonViewModel()
 
     var body: some View {

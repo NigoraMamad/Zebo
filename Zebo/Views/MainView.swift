@@ -16,7 +16,7 @@ struct MainView: View {
                     .font(.largeTitle)
                     .fontWeight(.bold)
 
-                NavigationLink(destination: ContentView()) {
+                NavigationLink(destination: SeasonAnalysisView()) {
                     Text("📷 Live Camera Analysis")
                         .font(.title3)
                         .padding()
@@ -35,9 +35,12 @@ struct MainView: View {
                         .foregroundColor(.white)
                         .cornerRadius(12)
                 }
+                NavigationLink("🎨 Explore Color Wheel", destination: ColorWheelView(colors: seasonalPalette))
+                
+                NavigationLink("👕 Try Colors on Camera", destination: ColorTryOnView())
             }
             .padding()
-            .navigationTitle("Welcome")
+            .navigationTitle("ZEBO")
         }
     }
 }
